@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
-
 
 import xlwt
 import MySQLdb
@@ -10,8 +7,8 @@ class MysqlExport(object):
     def __init__(self, **kwargs):
         self.wbk = xlwt.Workbook()
         self.sheet = self.wbk.add_sheet('sheet 1')
-        self.table = ''
-        self.fields = []
+        self._table = ''
+        self._fields = []
         self.my_config = {
             'host': kwargs.get('host', '127.0.0.1'),
             'user': kwargs.get('user', 'root'),
@@ -22,21 +19,21 @@ class MysqlExport(object):
 
     @property
     def table(self):
-        return self.__table
+        return self._table
 
     @table.setter
-    def table(self, table):
-        self.__table = table
+    def table(self, t):
+        self._table = t
 
     @property
     def fields(self):
-        return self.__fields
+        return self._fields
 
     @fields.setter
     def fields(self, fields):
         if not isinstance(fields, list):
             raise TypeError('fields is not a list')
-        self.__fields = fields
+        self._fields = fields
 
     def export_heads(self):
         for index, head in enumerate(self.fields):

@@ -1,5 +1,3 @@
-# encoding:utf-8
-
 from PIL import Image, ImageDraw, ImageFont
 import random
 import string
@@ -41,15 +39,10 @@ class CaptchaObj(object):
         s2 = int(self.img_width / len(self.checkcode))
         return int(min((s1, s2)) + max((s1, s2)) * 0.05)
 
-    # 英文单词验证码
     def word(self):
-        def _get_words():
-            return ''.join(
-                random.choice(
-                    string.ascii_letters + string.digits
-                ) for _ in range(6)
-            )
-        code = random.choice(self._get_words())
+        def get_words():
+            return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(6))
+        code = random.choice(get_words())
         self.checkcode = code
         return code
 

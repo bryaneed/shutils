@@ -1,5 +1,6 @@
 
 import time
+from functools import reduce
 from collections import Iterable
 
 
@@ -7,7 +8,7 @@ def decorator_1(func):
     def _wrapper(*args, **kwargs):
         now = time.time()
         result = func(*args, **kwargs)
-        print '\n', func.__name__, time.time() - now
+        print('\n', func.__name__, time.time() - now)
         return result
     return _wrapper
 
@@ -60,5 +61,5 @@ def genlist_1(lst):
 # lst = [[1], [[2], [[3], [[4], [[5], [[6], [7]]]]]]]
 lst = [1, [2, [3, [4, [5, [6, [7]]]]]]]
 
-print '\ngenlist: ', decorator_1(genlist)(lst)
-print '\ngenlist_1: ', decorator_1(genlist_1)(lst)
+print('\ngenlist: ', decorator_1(genlist)(lst))
+print('\ngenlist_1: ', decorator_1(genlist_1)(lst))

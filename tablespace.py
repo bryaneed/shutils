@@ -1,59 +1,61 @@
-# coding: utf-8
-
 import os
 import sys
 
 
 class TabReplace(object):
     """docstring for TabReplace"""
-    def __init__(self, dirname=None):
-        self.fileFilter = ('.js', '.html', '.css')
-        self._dirname = dirname
+    def __init__(self, path=None):
+        self.file_filter = ('.js', '.html', '.css')
+        self._dir_name = path
 
     @property
-    def dirname(self):
-        return self._dirname
+    def dir_name(self):
+        return self._dir_name
 
-    @dirname.setter
-    def dirname(self, dirname):
-        if not os.path.exists(dirname):
-            raise ValueError('dirname is invalid')
-        self._dirname = dirname
+    @dir_name.setter
+    def dir_name(self, path):
+        if not os.path.exists(path):
+            raise IOError('path is not valid.')
+        self._dir_name = path
 
-    def tab_replace_space(self, filename):
-        with open(filename, 'rw') as fg:
+    @classmethod
+    def replace(cls, file_path):
+        with open(file_path, 'rw') as fg:
             data = fg.read().replace('\t', '    ')
             fg.write(data)
 
-    def get_filename(self, dirname):
-        if os.path.isfile(dirname):
-            self.tab_replace_space(dirname)
+    def handle(self, path):
+        if os.path.isfile(path):
+            self.replace(path)
         else:
-            for files in os.listdir(dirname):
-                codir = os.path.join(dirname, files)
-                if os.path.exists(codir):
-                    if os.path.isfile(codir):
-                        head, ext = os.path.splitext(codir)
-                        if ext in self.fileFilter:
-                            self.tab_replace_space(codir)
+            for file in os.listdir(path):
+                file_path = os.path.join(path, file)
+                if os.path.exists(file_path):
+                    if os.path.isfile(file_path):
+                        head, ext = os.path.splitext(file_path)
+                        if ext in self.file_filter:
+                            self.replace(file_path)
                     else:
-                        self.get_filename(codir)
+                        self.handle(file_path)
 
     def process_func(self):
-        print 'process_func beginning...'
-        if self._dirname:
-            self.get_filename(self._dirname)
+        if self.dir_name:
+            self.handle(self.dir_name)
             return None
+
         raise ValueError('dirname is invalid')
 
 
-def fetch_command(subcommand, dirname=None):
-    if dirname:
+def fetch_command(subcommand, dir_name=None):
+    if not subcommand == 'run':
+        return
+
+    if dir_name:
         tr = TabReplace()
-        tr.dirname = dirname
+        tr.dir_name = dir_name
     else:
         tr = TabReplace()
-        tr.dirname = os.path.dirname(os.path.abspath(__file__))
+        tr.dir_name = os.path.dirname(os.path.abspath(__file__))
     tr.process_func()
     return
 
@@ -83,7 +85,7 @@ def execute_from_command_line(command=None):
             dirname = dirname_commands.replace('--dir=', '')
         except IndexError:
             dirname = None
-        fetch_command(subcommand, dirname=dirname)
+        fetch_command(subcommand, dir_name=dirname)
     else:
         sys.stdout.write(main_help_text())
 

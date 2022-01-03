@@ -1,5 +1,3 @@
-# coding: utf-8
-
 from .dk import Dkalgorithm, MaxCost
 from unittest import TestCase
 
@@ -19,6 +17,6 @@ class Dktestcase(TestCase):
         dk = Dkalgorithm(rule=rule, source=source, nodes=nodes)
         dk.run()
 
-        print dk.min_cost
-        print dk.step
+        print(dk.min_cost)
+        print(dk.step)
         self.assertEqual(1, 0)

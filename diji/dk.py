@@ -6,14 +6,13 @@ MaxCost = 10000
 class Dkalgorithm(object):
 
     def __init__(self, rule={}, source='', nodes=[]):
-        super(Dkalgorithm, self).__init__()
         self.rules = rule if rule else {}
         self.min_cost = {source: {}}
         self.step = {source: {}}
         self.nodes = nodes
         self.source = source
 
-    def djkstraAlg(self, S, V):
+    def djkstra_algorithm(self, S, V):
         # S 不一定等于self.nodes，除了node之外，还有顺序。
         if S == self.nodes or V == []:
             return
@@ -54,8 +53,7 @@ class Dkalgorithm(object):
         self.min_cost.get(self.source)[select_vnode] = minsv
         S.append(select_vnode)
         V.remove(select_vnode)
-        self.djkstraAlg(S, V)
+        self.djkstra_algorithm(S, V)
 
     def run(self):
-        self.djkstraAlg([self.source],
-                        [x for x in self.nodes if not x == self.source])
+        self.djkstra_algorithm([self.source], [x for x in self.nodes if not x == self.source])

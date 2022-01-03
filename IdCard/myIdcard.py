@@ -1,11 +1,10 @@
-# coding: utf-8
 from __future__ import absolute_import
 
-from functools import reduce
 import re
 
 import datetime
 import inspect
+from functools import reduce
 
 
 class IdCardClass(object):
