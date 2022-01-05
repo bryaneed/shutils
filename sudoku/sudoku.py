@@ -9,22 +9,22 @@ class SudoKuHandle(object):
     number_char = '*'
 
     @classmethod
-    def format_initial_data(cls, data: str='') -> list:
-        result = [list(v.strip()) for v in data.split('\n') if v.strip()]
+    def format_nums(cls, nums: str='') -> list:
+        result = [list(v.strip()) for v in nums.split('\n') if v.strip()]
         if not len(result) == 9:
-            raise ValueError(f'{data} value error.')
+            raise ValueError(f'{nums} value error.')
 
         check_str = ''.join([''.join(result[i]) for i in range(9)])
         if not len(check_str) == 81:
-            raise ValueError(f'{data} value error.')
+            raise ValueError(f'{nums} value error.')
 
         check_sum = list(set(check_str) - set(list(cls.numbers_str)) - set(cls.number_char))
         if check_sum:
-            raise ValueError(f'{data} value error.')
+            raise ValueError(f'{nums} value error.')
         return result
 
     def __init__(self, nums: str=''):
-        self.data = self.format_initial_data(nums)
+        self.data = self.format_nums(nums)
 
     def get_rows(self, i: int = 0):
         value = ''.join(self.data[i])
