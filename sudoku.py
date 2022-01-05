@@ -101,9 +101,6 @@ class Solution(object):
 
     def handle(self):
         def backup_dfs(res: list=None):
-            if self.finish_status() == self.status_valid:
-                raise StopIteration()
-
             exc = None
             coordinate, _, lst = self.get_mini_coordinate()
             res.append(coordinate)
@@ -145,18 +142,6 @@ if __name__ == '__main__':
     9*8*****7
     *3**75*6*
     """
-
-    # t_vals = """
-    # ****45**6
-    # 4***965*7
-    # *5****4*9
-    # 9*****3**
-    # 5****39**
-    # *********
-    # ****3*6**
-    # ********5
-    # ********3
-    # """
     s = Solution(format_val(t_vals))
     s.handle()
     print(s.output_data())
