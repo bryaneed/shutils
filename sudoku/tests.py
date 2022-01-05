@@ -24,5 +24,5 @@ class SudoKuTestCase(TestCase):
         for value in value_list:
             inst = SudoKuHandle(value)
             inst.progress()
-            print(f'\n{inst.format_display()}')
+            print(f'\n{value}\n\n{inst.format_display()}')
             assert inst.verify() == inst.status_valid
