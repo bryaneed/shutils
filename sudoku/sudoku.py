@@ -1,6 +1,6 @@
 
 
-class Solution(object):
+class SudoKuHandle(object):
     status_valid = 0
     status_review = 1
     status_invalid = 2
@@ -8,14 +8,29 @@ class Solution(object):
     numbers_str = '123456789'
     number_char = '*'
 
-    def __init__(self, nums: list = None):
-        self.data = nums
+    @classmethod
+    def format_initial_data(cls, data: str='') -> list:
+        result = [list(v.strip()) for v in data.split('\n') if v.strip()]
+        if not len(result) == 9:
+            raise ValueError(f'{data} value error.')
+
+        check_str = ''.join([''.join(result[i]) for i in range(9)])
+        if not len(check_str) == 81:
+            raise ValueError(f'{data} value error.')
+
+        check_sum = list(set(check_str) - set(list(cls.numbers_str)) - set(cls.number_char))
+        if check_sum:
+            raise ValueError(f'{data} value error.')
+        return result
+
+    def __init__(self, nums: str=''):
+        self.data = self.format_initial_data(nums)
 
     def get_rows(self, i: int = 0):
         value = ''.join(self.data[i])
         return value.replace(self.number_char, '')
 
-    def get_lines(self, j: int = 0):
+    def get_cols(self, j: int = 0):
         value = ''.join([self.data[i][j] for i in range(9)])
         return value.replace(self.number_char, '')
 
@@ -26,7 +41,7 @@ class Solution(object):
         return value.replace(self.number_char, '')
 
     @classmethod
-    def verify_val(cls, value: str = ''):
+    def verify_ceil(cls, value: str = ''):
         if len(value) == len(cls.numbers_str):
             return cls.status_valid if value == cls.numbers_str else cls.status_invalid
 
@@ -35,21 +50,21 @@ class Solution(object):
 
     def verify_row(self, i: int = 0):
         rows = ''.join(sorted(self.get_rows(i)))
-        result = self.verify_val(rows)
+        result = self.verify_ceil(rows)
         if result == self.status_invalid:
             raise ValueError(f'row: {i}, data: {rows}')
         return result
 
-    def verify_line(self, j: int = 0):
-        lines = ''.join(sorted(self.get_lines()))
-        result = self.verify_val(lines)
+    def verify_col(self, j: int = 0):
+        cols = ''.join(sorted(self.get_cols()))
+        result = self.verify_ceil(cols)
         if result == self.status_invalid:
-            raise ValueError(f'line: {j}, data: {lines}')
+            raise ValueError(f'col: {j}, data: {cols}')
         return result
 
     def verify_circle(self, i: int = 0, j: int = 0):
         circles = ''.join(sorted(self.get_circles()))
-        result = self.verify_val(circles)
+        result = self.verify_ceil(circles)
         if result == self.status_invalid:
             raise ValueError(f'circle: {i}, {j}. data: {circles}')
         return result
@@ -60,7 +75,7 @@ class Solution(object):
                 raise ValueError(f'guessing...')
 
         for j in range(9):
-            if not self.verify_line(j) == self.status_valid:
+            if not self.verify_col(j) == self.status_valid:
                 raise ValueError(f'guessing...')
 
         for i in [0, 3, 6]:
@@ -71,13 +86,13 @@ class Solution(object):
 
     def verify_number(self, i: int = 0, j: int = 0):
         ii = self.verify_row(i)
-        jj = self.verify_line(j)
+        jj = self.verify_col(j)
         cc = self.verify_circle(i, j)
         return ii or jj or cc
 
     def guess_numbers(self, i: int = 0, j: int = 0):
         nums = list(set(self.numbers_str) - set(self.get_rows(i)) -
-                    set(self.get_lines(j)) - set(self.get_circles(i, j)))
+                    set(self.get_cols(j)) - set(self.get_circles(i, j)))
         if not nums:
             raise ValueError(i, j)
         return nums
@@ -99,7 +114,7 @@ class Solution(object):
             return self.status_valid
         return self.status_review
 
-    def handle(self):
+    def progress(self):
         def backup_dfs(res: list=None):
             exc = None
             coordinate, _, lst = self.get_mini_coordinate()
@@ -122,26 +137,5 @@ class Solution(object):
         except StopIteration:
             return
 
-    def output_data(self):
+    def format_display(self):
         return '\n'.join([''.join(self.data[i]) for i in range(9)])
-
-
-def format_val(target_vals: str):
-    return [list(v.strip()) for v in target_vals.split('\n') if v.strip()]
-
-
-if __name__ == '__main__':
-    t_vals = """
-    *2*74**3*
-    8*****2*1
-    *******5*
-    7***6****
-    5**931**8
-    ****5***3
-    *4*******
-    9*8*****7
-    *3**75*6*
-    """
-    s = Solution(format_val(t_vals))
-    s.handle()
-    print(s.output_data())

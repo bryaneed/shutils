@@ -4,7 +4,7 @@ from functools import reduce
 from .region import result_list
 
 
-class IdCardClass(object):
+class IdCardHandle(object):
     @classmethod
     def parser_code(cls, id_code):
         reg = r'(?P<region>\d{6})(?P<date>\d{8})\d{2}(?P<sex>\d)(?P<checksum>\w)$'
@@ -64,17 +64,20 @@ class IdCardClass(object):
         if year > today.year or year < today.year - 100:
             raise ValueError('id_card birthday year error')
 
-        if mouth not in range(12):
+        if mouth not in range(1, 13):
             raise ValueError('id_card birthday mouth error')
 
-        if day not in range(32):
+        if mouth == 2 and day not in range(1, 30):
+            raise ValueError('id_card birthday mouth day error')
+
+        if day not in range(1, 32):
             raise ValueError('id_card birthday day error')
 
     def validate(self, id_code, id_data: dict=None):
         self.validate_checksum(id_code)
         self.validate_date(id_data)
 
-    def output(self, id_code, birthday=False, sex=False, region=False):
+    def progress(self, id_code, birthday=False, sex=False, region=False):
         id_data = self.parser_code(id_code)
         self.validate(id_code, id_data)
 
@@ -82,10 +85,8 @@ class IdCardClass(object):
 
         if birthday:
             result['birthday'] = self.get_birthday(id_data)
-
         if sex:
             result['sex'] = self.get_sex(id_data)
-
         if region:
             result['region'] = self.get_region(id_data)
         return result

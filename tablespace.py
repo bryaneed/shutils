@@ -6,16 +6,8 @@ class TabReplace(object):
     """docstring for TabReplace"""
     def __init__(self, path=None):
         self.file_filter = ('.js', '.html', '.css')
-        self._dir_name = path
-
-    @property
-    def dir_name(self):
-        return self._dir_name
-
-    @dir_name.setter
-    def dir_name(self, path):
-        if not os.path.exists(path):
-            raise IOError('path is not valid.')
+        assert os.path.exists(path)
+        self.dir_name = path
         self._dir_name = path
 
     @classmethod
@@ -24,7 +16,7 @@ class TabReplace(object):
             data = fg.read().replace('\t', '    ')
             fg.write(data)
 
-    def handle(self, path):
+    def progress(self, path):
         if os.path.isfile(path):
             self.replace(path)
         else:
@@ -36,18 +28,18 @@ class TabReplace(object):
                         if ext in self.file_filter:
                             self.replace(file_path)
                     else:
-                        self.handle(file_path)
+                        self.progress(file_path)
 
-    def process_func(self):
+    def run(self):
         if self.dir_name:
-            self.handle(self.dir_name)
+            self.progress(self.dir_name)
             return None
 
         raise ValueError('dirname is invalid')
 
 
-def fetch_command(subcommand, dir_name=None):
-    if not subcommand == 'run':
+def fetch_command(act_command, dir_name=None):
+    if not act_command == 'run':
         return
 
     if dir_name:
@@ -56,13 +48,13 @@ def fetch_command(subcommand, dir_name=None):
     else:
         tr = TabReplace()
         tr.dir_name = os.path.dirname(os.path.abspath(__file__))
-    tr.process_func()
+    tr.run()
     return
 
 
 def main_help_text():
     usage = [
-        'Available subcommand:',
+        'Available act_command:',
         '',
         'run:',
         'if --dir=None or anyless means run it from current dir. else dir=dirname means run it from dirname',
@@ -74,18 +66,18 @@ def main_help_text():
 
 def execute_from_command_line(command=None):
     try:
-        subcommand = command[1]
+        act_command = command[1]
     except IndexError:
-        subcommand = 'help'
+        act_command = 'help'
 
     commands_list = ['help', 'run']
-    if not subcommand == 'help' and subcommand in commands_list:
+    if not act_command == 'help' and act_command in commands_list:
         try:
-            dirname_commands = command[2]
-            dirname = dirname_commands.replace('--dir=', '')
+            dir_command = command[2]
+            dir_name = dir_command.replace('--dir=', '')
         except IndexError:
-            dirname = None
-        fetch_command(subcommand, dir_name=dirname)
+            dir_name = None
+        fetch_command(act_command, dir_name=dir_name)
     else:
         sys.stdout.write(main_help_text())
 

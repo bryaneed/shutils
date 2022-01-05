@@ -1,4 +1,4 @@
-from .dk import Dkalgorithm, MaxCost
+from diji.dk import Dkalgorithm, MaxCost
 from unittest import TestCase
 
 

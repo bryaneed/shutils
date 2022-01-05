@@ -9,79 +9,56 @@ current_path = os.getcwd()
 
 class CaptchaObj(object):
     def __init__(self, **kwargs):
-        self._checkcode = ''
-        self.chtype = kwargs.get('type', 'number')
+        self.checksum = ''
+        chins_type = kwargs.get('type', 'number')
+        assert chins_type in ['number', 'word']
+        self.chins_type = chins_type
+
         self.img_width = kwargs.get('img_width', 150)
         self.img_height = kwargs.get('img_height', 30)
+        self.background = (random.randrange(230, 255), random.randrange(230, 255), random.randrange(230, 255))
 
-    @property
-    def chtype(self):
-        return self._chtype
-
-    @chtype.setter
-    def chtype(self, _type):
-        if _type not in ['number', 'word']:
-            raise ValueError('Type Error')
-        self._chtype = _type
-
-    @property
-    def checkcode(self):
-        return self._checkcode
-
-    @checkcode.setter
-    def checkcode(self, answer):
-        self._checkcode = str(answer)
-
-    def _get_font_size(self):
+    def get_font_size(self):
         """  将图片高度的80%作为字体大小
         """
         s1 = int(self.img_height * 0.8)
-        s2 = int(self.img_width / len(self.checkcode))
+        s2 = int(self.img_width / len(self.checksum))
         return int(min((s1, s2)) + max((s1, s2)) * 0.05)
 
-    def word(self):
-        def get_words():
-            return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(6))
-        code = random.choice(get_words())
-        self.checkcode = code
+    def get_word(self):
+        code = random.choice(''.join(random.choice(string.ascii_letters + string.digits) for _ in range(6)))
+        self.checksum = code
         return code
 
-    # 数字公式验证码
-    def number(self):
+    def get_number(self):
         m, n = 1, 100
         x = random.randrange(m, n)
         y = random.randrange(m, n)
         if x < y:
             x, y = y, x
+
         if random.randrange(0, 2):
             code = "%s - %s = ?" % (x, y)
             z = x - y
         else:
             code = "%s + %s = ?" % (x, y)
             z = x + y
-        self.checkcode = z
+        self.checksum = z
         return code
 
-    def _yield_code(self):
-        fun = getattr(self, self.chtype.lower())
-        return fun()
+    def get(self):
+        f = getattr(self, self.chins_type)
+        return f()
 
-    def display(self):
-        self.background = (
-            random.randrange(230, 255),
-            random.randrange(230, 255),
-            random.randrange(230, 255)
-        )
+    def progress(self):
         im = Image.new(
             'RGB',
             (self.img_width, self.img_height),
             self.background
         )
-
-        # creat
         font_path = os.path.join(current_path, 'timesbi.ttf')
         font_color = ['black', 'darkblue', 'darkred']
-        font_size = self._get_font_size()
+        font_size = self.get_font_size()
         draw = ImageDraw.Draw(im)
         for i in range(random.randrange(2, 4)):
             line_color = (
@@ -97,18 +74,16 @@ class CaptchaObj(object):
             )
             draw.line(xy, fill=line_color, width=int(font_size * 0.1))
 
-        code = self._yield_code()
+        code = self.get()
         j = int(font_size * 0.3)
         k = int(font_size * 0.5)
         x = random.randrange(j, k)
         for i in code:
-            m = int(len(code))
             y = random.randrange(1, 3)
             if i in ('+', '-', '*', '=', '?'):
-                # 对计算符号等特殊字符放大处理
-                m = ceil(self.font_size * 0.8)
+                m = ceil(font_size * 0.8)
+
             else:
-                # 字体大小变化量,字数越少,字体大小变化越多
                 m = random.randrange(
                     0, int(45 / font_size) + int(font_size / 5)
                 )
@@ -131,10 +106,10 @@ class CaptchaObj(object):
         im.close()
         return buf.getvalue()
 
-    def validate(self, code, _checkcode):
+    def validate(self, checksum):
         """
         validate user's input
         """
-        if not code:
+        if not checksum:
             return False
-        return code.lower() == str(_checkcode).lower()
+        return checksum.lower() == self.checksum.lower()
