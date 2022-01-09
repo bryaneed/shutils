@@ -57,25 +57,15 @@ class IdCardHandle(object):
         if not valid_checksum == id_code[-1]:
             raise ValueError(f'id_card checksum error. maybe {id_code[:-1]}{valid_checksum}')
 
-    def validate_date(self, data: dict=None):
-        birthday = self.get_birthday(data)
-        year, mouth, day = int(birthday['year']), int(birthday['mouth']), int(birthday['day'])
-        today = datetime.datetime.today()
-        if year > today.year or year < today.year - 100:
-            raise ValueError('id_card birthday year error')
-
-        if mouth not in range(1, 13):
-            raise ValueError('id_card birthday mouth error')
-
-        if mouth == 2 and day not in range(1, 30):
-            raise ValueError('id_card birthday mouth day error')
-
-        if day not in range(1, 32):
-            raise ValueError('id_card birthday day error')
+    def validate_birthday(self, data: dict=None):
+        try:
+            datetime.datetime.strptime(data['date'], '%Y%m%d')
+        except ValueError as ex:
+            raise ex
 
     def validate(self, id_code, id_data: dict=None):
         self.validate_checksum(id_code)
-        self.validate_date(id_data)
+        self.validate_birthday(id_data)
 
     def progress(self, id_code, birthday=False, sex=False, region=False):
         id_data = self.parser_code(id_code)

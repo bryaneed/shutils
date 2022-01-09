@@ -1,7 +1,7 @@
 
 import time
 from functools import reduce
-from collections import Iterable
+
 
 
 def decorator_1(func):
@@ -16,7 +16,7 @@ def decorator_1(func):
 def genlist_2(lst):
     def _checkend(lst):
         for x in lst:
-            if isinstance(x, Iterable):
+            if isinstance(x, list):
                 return False
         return True
 
@@ -24,26 +24,26 @@ def genlist_2(lst):
         return lst
 
     def _genlist(v1, v2):
-        if isinstance(v1, Iterable) and isinstance(v2, Iterable):
+        if isinstance(v1, list) and isinstance(v2, list):
             return v1 + v2
-        elif isinstance(v1, Iterable) and not isinstance(v2, Iterable):
+        elif isinstance(v1, list) and not isinstance(v2, list):
             return v1 + [v2]
-        elif not isinstance(v1, Iterable) and isinstance(v2, Iterable):
+        elif not isinstance(v1, list) and isinstance(v2, list):
             return [v1] + v2
-        elif not isinstance(v1, Iterable) and not isinstance(v2, Iterable):
+        elif not isinstance(v1, list) and not isinstance(v2, list):
             return [v1, v2]
     return genlist_2(reduce(_genlist, lst))
 
 
 def genlist(lst):
     def _genlist(v1, v2):
-        if isinstance(v1, Iterable) and isinstance(v2, Iterable):
+        if isinstance(v1, list) and isinstance(v2, list):
             return v1 + v2
-        elif isinstance(v1, Iterable) and not isinstance(v2, Iterable):
+        elif isinstance(v1, list) and not isinstance(v2, list):
             return v1 + [v2]
-        elif not isinstance(v1, Iterable) and isinstance(v2, Iterable):
+        elif not isinstance(v1, list) and isinstance(v2, list):
             return [v1] + v2
-        elif not isinstance(v1, Iterable) and not isinstance(v2, Iterable):
+        elif not isinstance(v1, list) and not isinstance(v2, list):
             return [v1, v2]
     data = reduce(_genlist, lst)
     if data == lst:
@@ -52,14 +52,15 @@ def genlist(lst):
 
 
 def genlist_1(lst):
-    if isinstance(lst, Iterable):
+    if isinstance(lst, list):
         return [t for x in lst for t in genlist_1(x)]
     return [lst]
 
 
-# lst = [[1], [[2], [[3], [[4], [[5], [[6], [7]]]]]]
-# lst = [[1], [[2], [[3], [[4], [[5], [[6], [7]]]]]]]
-lst = [1, [2, [3, [4, [5, [6, [7]]]]]]]
+if __name__ == '__main__':
+    # lst = [[1], [[2], [[3], [[4], [[5], [[6], [7]]]]]]
+    # lst = [[1], [[2], [[3], [[4], [[5], [[6], [7]]]]]]]
+    lst = [1, [2, [3, [4, [5, [6, [7]]]]]]]
 
-print('\ngenlist: ', decorator_1(genlist)(lst))
-print('\ngenlist_1: ', decorator_1(genlist_1)(lst))
+    print('\ngenlist: ', decorator_1(genlist)(lst), '\n\n')
+    print('\ngenlist_1: ', decorator_1(genlist_1)(lst))
